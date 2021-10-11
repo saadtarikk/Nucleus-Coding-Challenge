@@ -16,9 +16,8 @@ const transactions = [
     { effectiveDate: new Date(2021, 8, 7, 9, 0, 0), value: 0.1 },
 ];
 
-export function getDailyPortfolioValues() {
-    const dailyValues = [];
-    //const dateValues = {};
+function getDailyPortfolioValues() {
+    let dailyValues = [];
     let portfolioTotal = 0;
     let coinTotal = 0;
     let currentPrice = 0;
@@ -34,24 +33,25 @@ export function getDailyPortfolioValues() {
     for(let i = 0; i < 7; i++){
         let indexDate = dailyValues[i]["effectiveDate"];
         console.log("The date is " + indexDate);
-        const trans = transactions.filter(item => item.effectiveDate.toISOString().slice(0,10) === indexDate);
+        const transaction = transactions.filter(item => item.effectiveDate.toISOString().slice(0,10) === indexDate);
         const price = prices.filter(item => item.effectiveDate.toISOString().slice(0,10) === indexDate);
-        if(price.length !== 0){
+        if(price.length > 0){
             currentPrice = price[price.length - 1].price;
         }
+        console.log("Current Price: " + currentPrice);
         // update portfolio total and coin total on each iteration
-        if(trans.length >= 1){
-            for(let i = 0; i < trans.length; i++){
-                portfolioTotal +=  trans[i].value * currentPrice
-                console.log("portfolio total is " + portfolioTotal);
-                coinTotal += trans[i].value
+        if(transaction.length > 0){
+            for(let i = 0; i < transaction.length; i++){
+                coinTotal += transaction[i].value;
                 console.log("total coin is " + coinTotal);
+                portfolioTotal +=  parseFloat((transaction[i].value * currentPrice).toFixed(5))
+                console.log("portfolio total is " + portfolioTotal);
             }
         } else {
             console.log("No transactions");
-            portfolioTotal = coinTotal * currentPrice
+            portfolioTotal = parseFloat((coinTotal * currentPrice).toFixed(5))
         }
-        dailyValues[i]["value"] = parseFloat((portfolioTotal).toFixed(5))
+        dailyValues[i]["value"] = portfolioTotal
 
         // console.log("current price is " + currentPrice)
         // console.log("total coin is " + coinTotal);
@@ -59,3 +59,5 @@ export function getDailyPortfolioValues() {
     }
     return dailyValues;
 }
+
+console.log(getDailyPortfolioValues())
